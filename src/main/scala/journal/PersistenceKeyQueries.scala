@@ -5,7 +5,7 @@ import database.DBComponent
 /**
   * Created by inakov on 21.01.17.
   */
-private[database] trait PersistenceKeyQueries {
+private[journal] trait PersistenceKeyQueries {
   this: DBComponent =>
 
   import profile.api._
@@ -30,4 +30,5 @@ private[database] trait PersistenceKeyQueries {
   protected def loadPersistenceIds() =
     persistenceKeys.map(_.persistenceId)
 
+  protected def loadPersistenceKeys() = persistenceKeys.to[List]
 }

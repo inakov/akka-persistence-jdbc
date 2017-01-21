@@ -12,12 +12,14 @@ import scala.concurrent.Future
 class EventRepository extends PersistenceKeyQueries with EventsQueries {
   this: DBComponent =>
 
+  import profile.api._
+
   def addKey(persistenceKey: PersistenceKey): Future[Long] = db.run{ persistenceKeysAutoInc += persistenceKey }
 
-  def loadKeys(): Future[List[PersistenceKey]] = db.run{ persistenceKeys.to[List].result }
+  def loadKeys(): Future[List[PersistenceKey]] = db.run{ loadPersistenceKeys().result }
 
   def getKey(persistenceId: String): Future[Option[Long]] = db.run{
-    selectPersistenceKey(persistenceId).result.headOption
+    findPersistenceKey(persistenceId).result.headOption
   }
 
   def addEvent(events: Seq[Event]) = ???

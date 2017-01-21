@@ -7,7 +7,7 @@ import database.DBComponent
 /**
   * Created by inakov on 21.01.17.
   */
-private[database] trait EventsQueries {
+private[journal] trait EventsQueries {
   this: DBComponent =>
 
   import profile.api._
