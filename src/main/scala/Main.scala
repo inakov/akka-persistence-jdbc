@@ -1,4 +1,4 @@
-import repository.{DatabaseComponent, EventRepository, PersistenceKey}
+import repository.{DBComponent, EventRepository, PersistenceKey}
 import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.Await
@@ -13,7 +13,7 @@ object Main extends App{
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val eventsRepo = new EventRepository with DatabaseComponent{
+  val eventsRepo = new EventRepository with DBComponent{
     override val profile: JdbcProfile = H2Profile
 
     import profile.api._
@@ -26,5 +26,5 @@ object Main extends App{
     db.run(setup)
   }
 
-  eventsRepo.list().foreach(println)
+  eventsRepo.loadKeys().foreach(println)
 }

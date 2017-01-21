@@ -5,7 +5,7 @@ import slick.jdbc.JdbcProfile
 /**
   * Created by inakov on 20.01.17.
   */
-trait DatabaseComponent {
+trait DBComponent {
 
   val profile: JdbcProfile
 
