@@ -1,16 +1,16 @@
-package repository
+package journal
 
 import java.sql.Timestamp
+
+import database.DBComponent
 
 import scala.concurrent.Future
 
 /**
   * Created by inakov on 19.01.17.
   */
-class EventRepository extends PersistenceKeyQuery with EventsQuery {
+class EventRepository extends PersistenceKeyQueries with EventsQueries {
   this: DBComponent =>
-
-  import profile.api._
 
   def addKey(persistenceKey: PersistenceKey): Future[Long] = db.run{ persistenceKeysAutoInc += persistenceKey }
 

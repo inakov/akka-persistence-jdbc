@@ -1,16 +1,18 @@
-package repository
+package journal
 
 import java.sql.Timestamp
+
+import database.DBComponent
 
 /**
   * Created by inakov on 21.01.17.
   */
-private[repository] trait EventsQuery {
+private[database] trait EventsQueries {
   this: DBComponent =>
 
   import profile.api._
 
-  private[EventsQuery] class EventsTable(tag: Tag) extends Table[Event](tag, "events_journal"){
+  private[EventsQueries] class EventsTable(tag: Tag) extends Table[Event](tag, "events_journal"){
     def persistenceKey = column[Long]("persistence_key")
     def sequenceNumber = column[Long]("sequence_nr")
     def content = column[Array[Byte]]("content")
@@ -20,25 +22,25 @@ private[repository] trait EventsQuery {
     def * = (persistenceKey, sequenceNumber, content, created.?) <> (Event.tupled, Event.unapply)
   }
 
-  protected val eventsJournal = TableQuery[EventsTable]
+  private val eventsJournal = TableQuery[EventsTable]
 
   protected def insertEvents(events: Seq[Event]) = eventsJournal ++= events.sortBy(_.sequenceNumber)
 
-  protected def deleteEvents(persistenceKey: Long, toSeqNum: Long) =
+  protected def deleteEvents(persistenceKey: Long, toSeqNr: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
-      .filter(_.sequenceNumber <= toSeqNum).delete
+      .filter(_.sequenceNumber <= toSeqNr).delete
 
   protected def loadEvents(persistenceKey: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .sortBy(_.sequenceNumber.desc)
 
-  protected def loadEvents(persistenceKey: Long, fromSeqNum: Long, toSeqNum: Long, maxSize: Long) =
+  protected def loadEvents(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
-      .filter(_.sequenceNumber >= fromSeqNum)
-      .filter(_.sequenceNumber <= toSeqNum)
+      .filter(_.sequenceNumber >= fromSeqNr)
+      .filter(_.sequenceNumber <= toSeqNr)
       .take(maxSize)
 
   protected def highestSeqNum(persistenceKey: Long) =

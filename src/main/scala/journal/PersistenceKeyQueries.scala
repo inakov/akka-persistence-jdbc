@@ -1,9 +1,11 @@
-package repository
+package journal
+
+import database.DBComponent
 
 /**
   * Created by inakov on 21.01.17.
   */
-private[repository] trait PersistenceKeyQuery {
+private[database] trait PersistenceKeyQueries {
   this: DBComponent =>
 
   import profile.api._
@@ -14,9 +16,12 @@ private[repository] trait PersistenceKeyQuery {
     def * = (persistenceKey.?, persistenceId) <> (PersistenceKey.tupled, PersistenceKey.unapply)
   }
 
-  protected val persistenceKeys = TableQuery[PersistenceKeysTable]
+  private val persistenceKeys = TableQuery[PersistenceKeysTable]
 
   protected def persistenceKeysAutoInc = persistenceKeys returning persistenceKeys.map(_.persistenceKey)
+
+  protected def insertPersistenceId(persistenceId: String) =
+    persistenceKeysAutoInc += PersistenceKey(None, persistenceId)
 
   protected def findPersistenceKey(persistenceId: String) =
     persistenceKeys.filter(_.persistenceId === persistenceId)

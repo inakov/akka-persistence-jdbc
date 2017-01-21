@@ -1,4 +1,5 @@
-import repository.{DBComponent, EventRepository, PersistenceKey}
+import database.{DBComponent, PersistenceKey}
+import journal.{EventRepository, PersistenceKey}
 import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.Await
