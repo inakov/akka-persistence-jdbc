@@ -16,10 +16,10 @@ class EventRepository extends PersistenceKeyQueries with EventsQueries {
 
   def addKey(persistenceKey: PersistenceKey): Future[Long] = db.run{ persistenceKeysAutoInc += persistenceKey }
 
-  def loadKeys(): Future[List[PersistenceKey]] = db.run{ loadPersistenceKeys().result }
+  def loadKeys(): Future[List[PersistenceKey]] = db.run{ selectPersistenceKeys().result }
 
   def getKey(persistenceId: String): Future[Option[Long]] = db.run{
-    findPersistenceKey(persistenceId).result.headOption
+    selectPersistenceKey(persistenceId).result.headOption
   }
 
   def addEvent(events: Seq[Event]) = ???

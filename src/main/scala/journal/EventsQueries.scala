@@ -31,12 +31,12 @@ private[journal] trait EventsQueries {
       .filter(_.persistenceKey === persistenceKey)
       .filter(_.sequenceNumber <= toSeqNr).delete
 
-  protected def loadEvents(persistenceKey: Long) =
+  protected def selectEvents(persistenceKey: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .sortBy(_.sequenceNumber.desc)
 
-  protected def loadEvents(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long) =
+  protected def selectEvents(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .filter(_.sequenceNumber >= fromSeqNr)

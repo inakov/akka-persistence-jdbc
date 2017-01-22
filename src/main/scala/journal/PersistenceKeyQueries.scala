@@ -23,12 +23,12 @@ private[journal] trait PersistenceKeyQueries {
   protected def insertPersistenceId(persistenceId: String) =
     persistenceKeysAutoInc += PersistenceKey(None, persistenceId)
 
-  protected def findPersistenceKey(persistenceId: String) =
+  protected def selectPersistenceKey(persistenceId: String) =
     persistenceKeys.filter(_.persistenceId === persistenceId)
       .map(_.persistenceKey)
 
-  protected def loadPersistenceIds() =
+  protected def selectPersistenceIds() =
     persistenceKeys.map(_.persistenceId)
 
-  protected def loadPersistenceKeys() = persistenceKeys.to[List]
+  protected def selectPersistenceKeys() = persistenceKeys.to[List]
 }
