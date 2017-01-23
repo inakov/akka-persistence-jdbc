@@ -12,19 +12,19 @@ private[journal] trait EventsQueries {
 
   import profile.api._
 
-  private[EventsQueries] class EventsTable(tag: Tag) extends Table[Event](tag, "events_journal"){
+  private[EventsQueries] class EventsTable(tag: Tag) extends Table[EventRecord](tag, "events_journal"){
     def persistenceKey = column[Long]("persistence_key")
     def sequenceNumber = column[Long]("sequence_nr")
     def content = column[Array[Byte]]("content")
     def created = column[Timestamp]("created")
     val pk = primaryKey("events_pk", (persistenceKey, sequenceNumber))
 
-    def * = (persistenceKey, sequenceNumber, content, created.?) <> (Event.tupled, Event.unapply)
+    def * = (persistenceKey, sequenceNumber, content, created.?) <> (EventRecord.tupled, EventRecord.unapply)
   }
 
   private val eventsJournal = TableQuery[EventsTable]
 
-  protected def insertEvents(events: Seq[Event]) = eventsJournal ++= events.sortBy(_.sequenceNumber)
+  protected def insertEvents(events: Seq[EventRecord]) = eventsJournal ++= events.sortBy(_.sequenceNumber)
 
   protected def deleteEvents(persistenceKey: Long, toSeqNr: Long) =
     eventsJournal
@@ -51,3 +51,5 @@ private[journal] trait EventsQueries {
 
 
 }
+
+case class EventRecord(persistenceKey: Long, sequenceNumber: Long, content: Array[Byte], created: Option[Timestamp])
