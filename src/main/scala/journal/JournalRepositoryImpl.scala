@@ -21,7 +21,9 @@ class JournalRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Databa
 
   override def getKey(persistenceId: String): Future[Option[Long]] = ???
 
-  override def save(events: Seq[EventRecord]): Future[Int] = ???
+  override def save(events: Seq[EventRecord]): Future[Option[Int]] = {
+    db.run(insertEvents(events).transactionally)
+  }
 
   override def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Long] = ???
 

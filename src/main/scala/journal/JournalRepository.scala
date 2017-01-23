@@ -16,7 +16,7 @@ trait JournalRepository {
 //    selectPersistenceKey(persistenceId).result.headOption
 //  }
 
-  def save(events: Seq[EventRecord]): Future[Int]
+  def save(events: Seq[EventRecord]): Future[Option[Int]]
 
   def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Long]
 

@@ -34,24 +34,24 @@ class SqlSnapshotStore extends SnapshotStore{
   override def saveAsync(metadata: SnapshotMetadata, snapshot: Any): Future[Unit] = {
     val SnapshotMetadata(persistenceId, seqNr, createdAt) = metadata
     serialization.serialize(Snapshot(snapshot)) match {
-      case Success(content) => saveSnapshot(persistenceId, seqNr, createdAt, content)
+      case Success(content) => saveSnapshot(persistenceId, seqNr, createdAt, content).map(_ => ())
       case Failure(exception) => Future.failed(exception)
     }
   }
 
   private def saveSnapshot(persistenceId: String, seqNr: Long, createdAt: Long, snapshot: Array[Byte]): Future[Unit] = {
     val snapshotRecord = SnapshotRecord(persistenceId, seqNr, createdAt, snapshot)
-    snapshotRepository.save(snapshotRecord)
+    snapshotRepository.save(snapshotRecord).map(_ => ())
   }
 
   override def deleteAsync(metadata: SnapshotMetadata): Future[Unit] = {
     val SnapshotMetadata(persistenceId, seqNr, _) = metadata
-    snapshotRepository.deleteSnapshot(persistenceId, seqNr)
+    snapshotRepository.deleteSnapshot(persistenceId, seqNr).map(_ => ())
   }
 
   override def deleteAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Unit] = {
     val (maxSeqNr, maxCreatedAt, minSeqNr, minCreatedAt) = extractSelectionCriteria(criteria)
-    snapshotRepository.deleteSnapshot(persistenceId, maxSeqNr, maxCreatedAt, minSeqNr, minCreatedAt)
+    snapshotRepository.deleteSnapshot(persistenceId, maxSeqNr, maxCreatedAt, minSeqNr, minCreatedAt).map(_ => ())
   }
 
   private def extractSelectionCriteria(criteria: SnapshotSelectionCriteria) = {

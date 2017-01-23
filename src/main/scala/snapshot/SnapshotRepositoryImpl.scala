@@ -13,16 +13,16 @@ class SnapshotRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Datab
 
   import  profile.api._
 
-  override def save(snapshot: SnapshotRecord): Future[Unit] = db.run(insertSnapshot(snapshot)).map(_ => ())
+  override def save(snapshot: SnapshotRecord): Future[Int] = db.run(insertSnapshot(snapshot))
 
-  override def deleteSnapshot(persistenceId: String, seqNr: Long): Future[Unit] =
-    db.run(selectByIdAndSeqNr(persistenceId, seqNr).delete).map(_ => ())
+  override def deleteSnapshot(persistenceId: String, seqNr: Long): Future[Int] =
+    db.run(selectByIdAndSeqNr(persistenceId, seqNr).delete)
 
   override def deleteSnapshot(persistenceId: String, maxSequenceNr: Option[Long], maxTimestamp: Option[Long],
-                              minSequenceNr: Option[Long], minTimestamp: Option[Long]): Future[Unit] =
+                              minSequenceNr: Option[Long], minTimestamp: Option[Long]): Future[Int] =
     db.run{
       selectSnapshotByCriteria(persistenceId, maxSequenceNr, maxTimestamp, minSequenceNr, minTimestamp).delete
-    }.map(_ => ())
+    }
 
   override def loadSnapshot(persistenceId: String, maxSeqNr: Option[Long], maxCreatedAt: Option[Long],
                             minSeqNr: Option[Long], minCreatedAt: Option[Long]): Future[Option[SnapshotRecord]] =
