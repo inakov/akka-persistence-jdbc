@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS events_journal(
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS snapshots (
-  persistence_key BIGINT NOT NULL,
+  persistence_id VARCHAR(255) NOT NULL,
   sequence_nr BIGINT NOT NULL,
   created_at BIGINT NOT NULL,
   snapshot BLOB NOT NULL,
