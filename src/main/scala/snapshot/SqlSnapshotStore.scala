@@ -4,8 +4,9 @@ import akka.persistence.serialization.Snapshot
 import akka.persistence.{SelectedSnapshot, SnapshotMetadata, SnapshotSelectionCriteria}
 import akka.persistence.snapshot.SnapshotStore
 import akka.serialization.{Serialization, SerializationExtension}
+import database.SqlPersistenceExtension
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /**
@@ -13,8 +14,12 @@ import scala.util.{Failure, Success}
   */
 class SqlSnapshotStore extends SnapshotStore{
 
+  implicit val ec: ExecutionContext = context.dispatcher
+
+  private val sqlPersistenceExtension = SqlPersistenceExtension(context.system)
+
   private val serialization: Serialization = SerializationExtension(context.system)
-  private val snapshotRepository: SnapshotRepository = _
+  private val snapshotRepository: SnapshotRepository = sqlPersistenceExtension.snapshotRepository
 
 
   override def loadAsync(persistenceId: String, criteria: SnapshotSelectionCriteria): Future[Option[SelectedSnapshot]] = {

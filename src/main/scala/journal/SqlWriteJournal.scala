@@ -1,12 +1,15 @@
 package journal
 
+import akka.actor.ActorSystem
 import akka.persistence.{AtomicWrite, PersistentRepr}
 import akka.persistence.journal.AsyncWriteJournal
 import akka.serialization.{Serialization, SerializationExtension}
+import akka.stream.{ActorMaterializer, Materializer}
 import akka.stream.scaladsl.Source
+import database.SqlPersistenceExtension
 
 import scala.collection.immutable.Seq
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Try
 
 /**
@@ -14,8 +17,14 @@ import scala.util.Try
   */
 class SqlWriteJournal extends AsyncWriteJournal{
 
-  private val journalRepository: JournalRepository = _
-  private val persistenceKeyRepository: PersistenceKeyRepository = _
+  implicit val ec: ExecutionContext = context.dispatcher
+  implicit val system: ActorSystem = context.system
+  implicit val mat: Materializer = ActorMaterializer()
+
+  private val sqlPersistenceExtension = SqlPersistenceExtension(context.system)
+
+  private val journalRepository: JournalRepository = sqlPersistenceExtension.journalRepository
+  private val persistenceKeyRepository: PersistenceKeyRepository = sqlPersistenceExtension.persistenceKeyRepository
 
   private val serialization: Serialization = SerializationExtension(context.system)
 

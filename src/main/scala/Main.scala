@@ -4,6 +4,9 @@
 //
 //import scala.concurrent.Await
 //import scala.concurrent.duration.Duration
+import akka.actor.ActorSystem
+import database.SqlPersistenceExtension
+
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -28,4 +31,11 @@ object Main extends App{
 //  }
 //
 //  eventsRepo.loadKeys().foreach(println)
+
+  val system = ActorSystem("mySystem")
+  val sqlExtension = SqlPersistenceExtension(system)
+
+  println(sqlExtension.journalRepository)
+  println(sqlExtension.persistenceKeyRepository)
+  println(sqlExtension.snapshotRepository)
 }

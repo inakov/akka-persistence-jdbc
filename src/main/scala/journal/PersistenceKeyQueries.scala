@@ -2,6 +2,8 @@ package journal
 
 import database.DbComponent
 
+import scala.concurrent.ExecutionContext
+
 /**
   * Created by inakov on 21.01.17.
   */
@@ -10,7 +12,7 @@ trait PersistenceKeyQueries {
 
   import config.profile.api._
 
-  private[PersistenceKeyTable] class PersistenceKeysTable(tag: Tag) extends Table[PersistenceKey](tag, "persistence_keys") {
+  private[PersistenceKeyQueries] class PersistenceKeysTable(tag: Tag) extends Table[PersistenceKey](tag, "persistence_keys") {
     def persistenceKey = column[Long]("persistence_key", O.PrimaryKey, O.AutoInc)
     def persistenceId = column[String]("persistence_id")
     def * = (persistenceKey.?, persistenceId) <> (PersistenceKey.tupled, PersistenceKey.unapply)
@@ -30,7 +32,7 @@ trait PersistenceKeyQueries {
   protected def selectPersistenceIds() =
     persistenceKeys.map(_.persistenceId)
 
-  protected def insertIfNotExists(persistenceId: String) = {
+  protected def insertIfNotExists(persistenceId: String)(implicit ec: ExecutionContext) = {
     persistenceKeys.filter(_.persistenceId === persistenceId).take(1).result.headOption.flatMap {
       case Some(persistenceKey) =>
         DBIO.successful(persistenceKey.persistenceKey.get)

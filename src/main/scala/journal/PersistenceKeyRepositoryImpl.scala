@@ -4,7 +4,7 @@ import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by inakov on 24.01.17.
@@ -23,7 +23,7 @@ class PersistenceKeyRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
   override def loadPersistenceKey(persistenceId: String): Future[Option[Long]] =
     db.run{selectPersistenceKey(persistenceId).result.headOption}
 
-  override def saveOrLoadKey(persistenceId: String): Future[Long] = {
+  override def saveOrLoadKey(persistenceId: String)(implicit ec: ExecutionContext): Future[Long] = {
     db.run(insertIfNotExists(persistenceId))
   }
 }
