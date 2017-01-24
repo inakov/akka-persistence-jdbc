@@ -1,5 +1,7 @@
 package journal
 
+import org.reactivestreams.Publisher
+
 import scala.concurrent.Future
 
 /**
@@ -9,17 +11,14 @@ trait JournalRepository {
 
   def savePersistenceKey(persistenceKey: PersistenceKey): Future[Long]
 
-  def loadPersistenceIds(): Future[List[String]]
-
-  def getKey(persistenceId: String): Future[Option[Long]]
-//  = db.run{
-//    selectPersistenceKey(persistenceId).result.headOption
-//  }
+  def loadPersistenceKey(persistenceId: String): Future[Option[Long]]
 
   def save(events: Seq[EventRecord]): Future[Option[Int]]
 
-  def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Long]
+  def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Option[Long]]
 
   def delete(persistenceKey: Long, toSequenceNr: Long): Future[Int]
+
+  def eventStream(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long): Publisher[EventRecord]
 
 }

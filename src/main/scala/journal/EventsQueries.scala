@@ -46,7 +46,7 @@ private[journal] trait EventsQueries {
   protected def highestSeqNum(persistenceKey: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
-      .sortBy(_.sequenceNumber.asc)
+      .sortBy(_.sequenceNumber.desc)
       .map(_.sequenceNumber).take(1)
 
 
