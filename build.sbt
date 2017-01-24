@@ -17,6 +17,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"   %% "akka-stream-testkit"  % akkaVersion  % "test",
   "com.typesafe.slick"  %% "slick"                % "3.2.0-M2",
   "org.slf4j"            % "slf4j-nop"            % "1.6.4",
-  "com.h2database"       % "h2"                   % "1.4.187"
+  "com.h2database"       % "h2"                   % "1.4.187",
+  "mysql"                % "mysql-connector-java" % "6.0.5",
+  "com.typesafe.slick"  %% "slick-hikaricp"       % "3.2.0-M2",
+  "com.zaxxer"           % "HikariCP"             % "2.5.1"
 )
     

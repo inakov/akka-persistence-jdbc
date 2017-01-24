@@ -34,11 +34,11 @@ class SqlWriteJournal extends AsyncWriteJournal{
   }
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
-    for{
-      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId)
-      events <- Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get))
-      _ <- persistBatch(events)
-    } yield ()
+    persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).map{ persistenceKey =>
+      Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get)).map{ events =>
+        persistBatch(events)
+      }
+    }
   }
 
   private def createEventRecord(persistenceKey: Long, persistentRepr: PersistentRepr): Try[EventRecord] = {
