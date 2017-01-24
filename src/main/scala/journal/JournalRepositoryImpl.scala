@@ -16,13 +16,6 @@ class JournalRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Databa
 
   import profile.api._
 
-  override def savePersistenceKey(persistenceKey: PersistenceKey): Future[Long] = {
-    db.run{persistenceKeysAutoInc += persistenceKey}
-  }
-
-  override def loadPersistenceKey(persistenceId: String): Future[Option[Long]] =
-    db.run{selectPersistenceKey(persistenceId).result.headOption}
-
   override def save(events: Seq[EventRecord]): Future[Option[Int]] = {
     db.run(insertEvents(events).transactionally)
   }

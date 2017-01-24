@@ -9,10 +9,6 @@ import scala.concurrent.Future
   */
 trait JournalRepository {
 
-  def savePersistenceKey(persistenceKey: PersistenceKey): Future[Long]
-
-  def loadPersistenceKey(persistenceId: String): Future[Option[Long]]
-
   def save(events: Seq[EventRecord]): Future[Option[Int]]
 
   def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Option[Long]]
