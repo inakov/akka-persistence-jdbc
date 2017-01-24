@@ -30,6 +30,11 @@ trait PersistenceKeyQueries {
   protected def selectPersistenceIds() =
     persistenceKeys.map(_.persistenceId)
 
+//  def insertIfNotExists(persistenceId: String) = persistenceKeys.map(_.persistenceId).forceInsertQuery {
+//    val exists = persistenceKeys.filter(_.persistenceId === persistenceId.bind).exists
+//    Query(persistenceId.bind).filter(_ => !exists)
+//  }
+
 }
 
 case class PersistenceKey(persistenceKey: Option[Long] = None, persistenceId: String)

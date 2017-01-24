@@ -19,7 +19,13 @@ class PersistenceKeyRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend
     db.run{persistenceKeysAutoInc += persistenceKey}
   }
 
-  override def loadPersistenceKey(persistenceId: String): Future[Long] =
-    db.run{selectPersistenceKey(persistenceId).result.head}
+  override def loadPersistenceKey(persistenceId: String): Future[Option[Long]] =
+    db.run{selectPersistenceKey(persistenceId).result.headOption}
 
+  override def loadOrSaveKey(persistenceId: String): Future[Long] = {
+    loadPersistenceKey(persistenceId).flatMap({
+      case Some(key) => Future.successful(key)
+      case None => savePersistenceKey(PersistenceKey(None, persistenceId))
+    })
+  }
 }

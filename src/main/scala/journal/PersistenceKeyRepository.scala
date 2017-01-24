@@ -9,6 +9,8 @@ trait PersistenceKeyRepository {
 
   def savePersistenceKey(persistenceKey: PersistenceKey): Future[Long]
 
-  def loadPersistenceKey(persistenceId: String): Future[Long]
+  def loadPersistenceKey(persistenceId: String): Future[Option[Long]]
+
+  def loadOrSaveKey(persistenceId: String): Future[Long]
 
 }
