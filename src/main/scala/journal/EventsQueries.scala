@@ -2,13 +2,13 @@ package journal
 
 import java.sql.Timestamp
 
-import database.DBComponent
+import database.DbComponent
 
 /**
   * Created by inakov on 21.01.17.
   */
 private[journal] trait EventsQueries {
-  this: DBComponent =>
+  this: DbComponent =>
 
   import config.profile.api._
 

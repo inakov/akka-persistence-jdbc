@@ -1,15 +1,16 @@
 package snapshot
 
-import database.DBComponent
-import slick.jdbc.{JdbcBackend, JdbcProfile}
+import database.DbComponent
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 
 import scala.concurrent.Future
 
 /**
   * Created by inakov on 23.01.17.
   */
-class SnapshotRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Database)
-  extends SnapshotRepository with DBComponent with SnapshotQueries{
+class SnapshotRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
+  extends SnapshotRepository with DbComponent with SnapshotQueries{
 
   import  config.profile.api._
 

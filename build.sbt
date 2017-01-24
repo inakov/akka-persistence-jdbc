@@ -1,4 +1,4 @@
-name := "akka-persistence-jdbc"
+name := "akka-persistence-sql"
 
 version := "1.0"
 

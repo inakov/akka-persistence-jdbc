@@ -6,7 +6,7 @@ import slick.jdbc.JdbcProfile
 /**
   * Created by inakov on 20.01.17.
   */
-trait DBComponent {
+trait DbComponent {
 
   val config: DatabaseConfig[JdbcProfile]
   val db: JdbcProfile#Backend#Database = config.db

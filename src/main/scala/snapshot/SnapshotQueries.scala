@@ -1,12 +1,12 @@
 package snapshot
 
-import database.DBComponent
+import database.DbComponent
 
 /**
   * Created by inakov on 21.01.17.
   */
 trait SnapshotQueries {
-  this: DBComponent =>
+  this: DbComponent =>
 
   import config.profile.api._
 

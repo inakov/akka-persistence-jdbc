@@ -1,12 +1,12 @@
 package journal
 
-import database.DBComponent
+import database.DbComponent
 
 /**
   * Created by inakov on 21.01.17.
   */
 trait PersistenceKeyQueries {
-  this: DBComponent =>
+  this: DbComponent =>
 
   import config.profile.api._
 
@@ -35,7 +35,7 @@ trait PersistenceKeyQueries {
       case Some(persistenceKey) =>
         DBIO.successful(persistenceKey.persistenceKey.get)
       case None =>
-        persistenceKeys.returning(persistenceKeys.map(_.persistenceKey)) += PersistenceKey(None, persistenceId)
+        persistenceKeysAutoInc += PersistenceKey(None, persistenceId)
     }
   }
 

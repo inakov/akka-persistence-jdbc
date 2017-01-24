@@ -1,6 +1,6 @@
 package journal
 
-import database.DBComponent
+import database.DbComponent
 import org.reactivestreams.Publisher
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
@@ -11,7 +11,7 @@ import scala.concurrent.Future
   * Created by inakov on 23.01.17.
   */
 class JournalRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
-  extends JournalRepository with PersistenceKeyQueries with EventsQueries with DBComponent{
+  extends JournalRepository with PersistenceKeyQueries with EventsQueries with DbComponent{
 
   import config.profile.api._
 

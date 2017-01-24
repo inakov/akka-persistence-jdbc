@@ -1,5 +1,5 @@
 package journal
-import database.DBComponent
+import database.DbComponent
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
@@ -10,7 +10,7 @@ import scala.concurrent.Future
   * Created by inakov on 24.01.17.
   */
 class PersistenceKeyRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
-  extends PersistenceKeyRepository with PersistenceKeyQueries with DBComponent{
+  extends PersistenceKeyRepository with PersistenceKeyQueries with DbComponent{
 
   import config.profile.api._
 
