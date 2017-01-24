@@ -1,5 +1,6 @@
 package database
 
+import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
 /**
@@ -7,10 +8,7 @@ import slick.jdbc.JdbcProfile
   */
 trait DBComponent {
 
-  val profile: JdbcProfile
-
-  import profile.api._
-
-  val db: Database
+  val config: DatabaseConfig[JdbcProfile]
+  val db: JdbcProfile#Backend#Database = config.db
 
 }

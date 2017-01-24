@@ -11,7 +11,7 @@ import scala.concurrent.Future
 class SnapshotRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Database)
   extends SnapshotRepository with DBComponent with SnapshotQueries{
 
-  import  profile.api._
+  import  config.profile.api._
 
   override def save(snapshot: SnapshotRecord): Future[Int] = db.run(insertSnapshot(snapshot))
 

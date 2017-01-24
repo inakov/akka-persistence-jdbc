@@ -10,7 +10,7 @@ import database.DBComponent
 private[journal] trait EventsQueries {
   this: DBComponent =>
 
-  import profile.api._
+  import config.profile.api._
 
   private[EventsQueries] class EventsTable(tag: Tag) extends Table[EventRecord](tag, "events_journal"){
     def persistenceKey = column[Long]("persistence_key")

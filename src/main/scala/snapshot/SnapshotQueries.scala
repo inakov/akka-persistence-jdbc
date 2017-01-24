@@ -8,7 +8,7 @@ import database.DBComponent
 trait SnapshotQueries {
   this: DBComponent =>
 
-  import profile.api._
+  import config.profile.api._
 
   private[SnapshotQueries] class SnapshotTable(tag: Tag) extends Table[SnapshotRecord](tag, "snapshots"){
     def persistenceId = column[String]("persistence_id")

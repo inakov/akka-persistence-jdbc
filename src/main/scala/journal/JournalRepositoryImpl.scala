@@ -1,20 +1,19 @@
 package journal
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
 import database.DBComponent
 import org.reactivestreams.Publisher
-import slick.jdbc.{JdbcBackend, JdbcProfile}
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 
 import scala.concurrent.Future
 
 /**
   * Created by inakov on 23.01.17.
   */
-class JournalRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Database)
+class JournalRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
   extends JournalRepository with PersistenceKeyQueries with EventsQueries with DBComponent{
 
-  import profile.api._
+  import config.profile.api._
 
   override def save(events: Seq[EventRecord]): Future[Option[Int]] = {
     db.run(insertEvents(events).transactionally)

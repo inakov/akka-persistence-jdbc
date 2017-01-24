@@ -1,6 +1,7 @@
 package journal
 import database.DBComponent
-import slick.jdbc.{JdbcBackend, JdbcProfile}
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
@@ -8,10 +9,10 @@ import scala.concurrent.Future
 /**
   * Created by inakov on 24.01.17.
   */
-class PersistenceKeyRepositoryImpl(val profile: JdbcProfile, val db: JdbcBackend#Database)
+class PersistenceKeyRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
   extends PersistenceKeyRepository with PersistenceKeyQueries with DBComponent{
 
-  import profile.api._
+  import config.profile.api._
 
   private[this] val persistenceIds: TrieMap[String, Long] = TrieMap.empty
 

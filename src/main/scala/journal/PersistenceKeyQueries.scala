@@ -8,7 +8,7 @@ import database.DBComponent
 trait PersistenceKeyQueries {
   this: DBComponent =>
 
-  import profile.api._
+  import config.profile.api._
 
   private[PersistenceKeyTable] class PersistenceKeysTable(tag: Tag) extends Table[PersistenceKey](tag, "persistence_keys") {
     def persistenceKey = column[Long]("persistence_key", O.PrimaryKey, O.AutoInc)
