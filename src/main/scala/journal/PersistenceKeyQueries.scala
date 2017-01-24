@@ -30,10 +30,14 @@ trait PersistenceKeyQueries {
   protected def selectPersistenceIds() =
     persistenceKeys.map(_.persistenceId)
 
-//  def insertIfNotExists(persistenceId: String) = persistenceKeys.map(_.persistenceId).forceInsertQuery {
-//    val exists = persistenceKeys.filter(_.persistenceId === persistenceId.bind).exists
-//    Query(persistenceId.bind).filter(_ => !exists)
-//  }
+  protected def insertIfNotExists(persistenceId: String) = {
+    persistenceKeys.filter(_.persistenceId === persistenceId).take(1).result.headOption.flatMap {
+      case Some(persistenceKey) =>
+        DBIO.successful(persistenceKey.persistenceKey.get)
+      case None =>
+        persistenceKeys.returning(persistenceKeys.map(_.persistenceKey)) += PersistenceKey(None, persistenceId)
+    }
+  }
 
 }
 

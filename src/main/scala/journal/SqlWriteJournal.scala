@@ -26,9 +26,9 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
     for{
-      persistenceKey <- persistenceKeyRepository.loadOrSaveKey(atomicWrite.persistenceId)
+      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId)
       events <- Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get))
-      persistBatch(events)
+      _ <- persistBatch(events)
     } yield ()
   }
 
@@ -47,14 +47,14 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   override def asyncDeleteMessagesTo(persistenceId: String, toSequenceNr: Long): Future[Unit] = {
     for {
-      persistenceKey <- persistenceKeyRepository.loadOrSaveKey(persistenceId)
-      journalRepository.delete(persistenceKey, toSequenceNr)
+      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(persistenceId)
+      _ <- journalRepository.delete(persistenceKey, toSequenceNr)
     } yield ()
   }
 
   override def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long,
                                    max: Long)(recoveryCallback: (PersistentRepr) => Unit): Future[Unit] = {
-    persistenceKeyRepository.loadOrSaveKey(persistenceId).map{ persistenceKey =>
+    persistenceKeyRepository.saveOrLoadKey(persistenceId).map{ persistenceKey =>
       Source.fromPublisher(journalRepository.eventStream(persistenceKey, fromSequenceNr, toSequenceNr, max))
         .map(event => serialization.deserialize(event.content, classOf[PersistentRepr]).get)
         .runFold(0){ (count, event) =>
@@ -67,7 +67,7 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   override def asyncReadHighestSequenceNr(persistenceId: String, fromSequenceNr: Long): Future[Long] = {
     for{
-      persistenceKey <- persistenceKeyRepository.loadOrSaveKey(persistenceId)
+      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(persistenceId)
       seqNr <- journalRepository.loadHighestSequenceNr(persistenceKey, fromSequenceNr)
     } yield seqNr.getOrElse(0L)
   }
