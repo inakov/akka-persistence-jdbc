@@ -34,10 +34,9 @@ class SqlWriteJournal extends AsyncWriteJournal{
   }
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
-    persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).map{ persistenceKey =>
-      Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get)).map{ events =>
-        persistBatch(events)
-      }
+    persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).flatMap{ persistenceKey =>
+      val events = atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get)
+      persistBatch(events)
     }
   }
 
@@ -55,21 +54,20 @@ class SqlWriteJournal extends AsyncWriteJournal{
   }
 
   override def asyncDeleteMessagesTo(persistenceId: String, toSequenceNr: Long): Future[Unit] = {
-    for {
-      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(persistenceId)
-      _ <- journalRepository.delete(persistenceKey, toSequenceNr)
-    } yield ()
+    persistenceKeyRepository.saveOrLoadKey(persistenceId).flatMap{ persistenceKey =>
+      journalRepository.delete(persistenceKey, toSequenceNr)
+    }.map(_ => ())
   }
 
   override def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long,
                                    max: Long)(recoveryCallback: (PersistentRepr) => Unit): Future[Unit] = {
-    persistenceKeyRepository.saveOrLoadKey(persistenceId).map{ persistenceKey =>
+    persistenceKeyRepository.saveOrLoadKey(persistenceId).flatMap{ persistenceKey =>
       Source.fromPublisher(journalRepository.eventStream(persistenceKey, fromSequenceNr, toSequenceNr, max))
         .map(event => serialization.deserialize(event.content, classOf[PersistentRepr]).get)
         .runFold(0){ (count, event) =>
           recoveryCallback(event)
           count + 1
-        }.map(count => ())
+        }.map(_ => ())
     }
   }
 

@@ -21,8 +21,8 @@ trait SnapshotQueries {
 
   private val snapshots = TableQuery[SnapshotTable]
 
-  protected def insertSnapshot(snapshot: SnapshotRecord) =
-    snapshots += snapshot
+  protected def insertOrUpdate(snapshot: SnapshotRecord) =
+    snapshots insertOrUpdate snapshot
 
   protected def selectSnapshots(persistenceId: String) =
     snapshots

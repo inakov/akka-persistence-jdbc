@@ -38,7 +38,7 @@ trait PersistenceKeyQueries {
         DBIO.successful(persistenceKey.persistenceKey.get)
       case None =>
         persistenceKeysAutoInc += PersistenceKey(None, persistenceId)
-    }
+    }.transactionally
   }
 
 }

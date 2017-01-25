@@ -19,6 +19,5 @@ CREATE TABLE IF NOT EXISTS snapshots (
   sequence_nr BIGINT NOT NULL,
   created_at BIGINT NOT NULL,
   snapshot BLOB NOT NULL,
-  PRIMARY KEY (persistence_key, sequence_nr),
-  FOREIGN KEY (persistence_key) REFERENCES persistence_keys (persistence_key)
+  PRIMARY KEY (persistence_id, sequence_nr)
 ) ENGINE = InnoDB;

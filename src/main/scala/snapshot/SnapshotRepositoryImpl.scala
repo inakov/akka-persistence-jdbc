@@ -14,7 +14,7 @@ class SnapshotRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
 
   import  config.profile.api._
 
-  override def save(snapshot: SnapshotRecord): Future[Int] = db.run(insertSnapshot(snapshot))
+  override def save(snapshot: SnapshotRecord): Future[Int] = db.run(insertOrUpdate(snapshot))
 
   override def deleteSnapshot(persistenceId: String, seqNr: Long): Future[Int] =
     db.run(selectByIdAndSeqNr(persistenceId, seqNr).delete)
