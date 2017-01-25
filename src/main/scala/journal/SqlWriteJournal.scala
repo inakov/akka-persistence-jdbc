@@ -10,7 +10,7 @@ import database.SqlPersistenceExtension
 
 import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
   * Created by inakov on 22.01.17.
@@ -35,15 +35,17 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
     persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).flatMap{ persistenceKey =>
-      val events = atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)).map(_.get)
-      persistBatch(events)
+      val events = Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)))
+      events match {
+        case Success(event) => persistBatch(event)
+        case Failure(e) => Future.successful(Failure(e))
+      }
     }
   }
 
-  private def createEventRecord(persistenceKey: Long, persistentRepr: PersistentRepr): Try[EventRecord] = {
-    serialization.serialize(persistentRepr).map{ content =>
-      EventRecord(persistenceKey, persistentRepr.sequenceNr, content, None)
-    }
+  private def createEventRecord(persistenceKey: Long, persistentRepr: PersistentRepr): EventRecord = {
+    val content = serialization.serialize(persistentRepr).get
+    EventRecord(persistenceKey, persistentRepr.sequenceNr, content, None)
   }
 
   private def persistBatch(events: Seq[EventRecord]): Future[Try[Unit]] = {

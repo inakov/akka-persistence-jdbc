@@ -9,6 +9,6 @@ import com.typesafe.config.ConfigFactory
   */
 class SqlJournalSpec extends JournalSpec(ConfigFactory.load){
 
-  override def supportsRejectingNonSerializableObjects: CapabilityFlag = CapabilityFlag.off
+  override def supportsRejectingNonSerializableObjects: CapabilityFlag = CapabilityFlag.on
 
 }
