@@ -21,9 +21,20 @@ class PersistenceKeyRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
   }
 
   override def loadPersistenceKey(persistenceId: String): Future[Option[Long]] =
-    db.run{selectPersistenceKey(persistenceId).result.headOption}
+    db.run{selectPersistenceKey(persistenceId).take(1).result.headOption}
+
+  private def insertKeyIfNotExists(persistenceId: String): Future[Int] =
+    db.run{insertIfNotExists(persistenceId)}
 
   override def saveOrLoadKey(persistenceId: String)(implicit ec: ExecutionContext): Future[Long] = {
-    db.run(insertIfNotExists(persistenceId))
+    loadPersistenceKey(persistenceId).flatMap{
+      case Some(key) => Future.successful(key)
+      case None =>{
+        for{
+          _ <- insertKeyIfNotExists(persistenceId)
+          key <- loadPersistenceKey(persistenceId)
+        } yield key.get
+      }
+    }
   }
 }

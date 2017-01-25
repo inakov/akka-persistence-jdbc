@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS events_journal(
   sequence_nr BIGINT NOT NULL,
   content BLOB NOT NULL,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (persistence_key, sequence_nr),
-  FOREIGN KEY (persistence_key) REFERENCES persistence_keys (persistence_key)
+  PRIMARY KEY (persistence_key, sequence_nr)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS snapshots (
