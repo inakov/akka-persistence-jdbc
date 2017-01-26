@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "com.h2database"       % "h2"                   % "1.4.187",
   "mysql"                % "mysql-connector-java" % "6.0.5",
   "com.typesafe.slick"  %% "slick-hikaricp"       % "3.2.0-M2",
-  "com.zaxxer"           % "HikariCP"             % "2.5.1"
+  "com.zaxxer"           % "HikariCP"             % "2.5.1",
+  "com.googlecode.concurrentlinkedhashmap"  % "concurrentlinkedhashmap-lru" % "1.4.2"
 )
     
