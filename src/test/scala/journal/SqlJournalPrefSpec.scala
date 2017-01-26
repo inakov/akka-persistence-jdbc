@@ -12,4 +12,5 @@ class SqlJournalPrefSpec extends JournalPerfSpec(ConfigFactory.load){
   override protected def supportsRejectingNonSerializableObjects: CapabilityFlag = CapabilityFlag.on
 
   override def awaitDurationMillis: Long = 5.minute.toMillis
+  override def eventsCount: Int = 1000
 }
