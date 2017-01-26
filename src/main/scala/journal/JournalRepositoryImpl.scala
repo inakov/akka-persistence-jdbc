@@ -19,15 +19,15 @@ class JournalRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
     db.run(insertEvents(events).transactionally)
   }
 
-  override def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Option[Long]] = {
+  override def loadHighestSequenceNr(persistenceKey: String, fromSeqNr: Long): Future[Option[Long]] = {
     db.run(highestSeqNum(persistenceKey).result.headOption)
   }
 
-  override def delete(persistenceKey: Long, toSequenceNr: Long): Future[Int] = {
+  override def delete(persistenceKey: String, toSequenceNr: Long): Future[Int] = {
     db.run(removeEvents(persistenceKey, toSequenceNr))
   }
 
-  override def eventStream(persistenceKey: Long, fromSeqNr: Long,
+  override def eventStream(persistenceKey: String, fromSeqNr: Long,
                            toSeqNr: Long, maxSize: Long): Publisher[EventRecord] = {
     db.stream(selectEvents(persistenceKey, fromSeqNr, toSeqNr, maxSize).result)
   }

@@ -11,10 +11,10 @@ trait JournalRepository {
 
   def save(events: Seq[EventRecord]): Future[Option[Int]]
 
-  def loadHighestSequenceNr(persistenceKey: Long, fromSeqNr: Long): Future[Option[Long]]
+  def loadHighestSequenceNr(persistenceKey: String, fromSeqNr: Long): Future[Option[Long]]
 
-  def delete(persistenceKey: Long, toSequenceNr: Long): Future[Int]
+  def delete(persistenceKey: String, toSequenceNr: Long): Future[Int]
 
-  def eventStream(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long): Publisher[EventRecord]
+  def eventStream(persistenceKey: String, fromSeqNr: Long, toSeqNr: Long, maxSize: Long): Publisher[EventRecord]
 
 }

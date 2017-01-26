@@ -13,7 +13,7 @@ private[journal] trait EventsQueries {
   import config.profile.api._
 
   private[EventsQueries] class EventsTable(tag: Tag) extends Table[EventRecord](tag, "events_journal"){
-    def persistenceKey = column[Long]("persistence_key")
+    def persistenceKey = column[String]("persistence_id")
     def sequenceNumber = column[Long]("sequence_nr")
     def content = column[Array[Byte]]("content")
     def created = column[Timestamp]("created")
@@ -27,19 +27,19 @@ private[journal] trait EventsQueries {
 
   protected def insertEvents(events: Seq[EventRecord]) = eventsJournal ++= events.sortBy(_.sequenceNumber)
 
-  protected def removeEvents(persistenceKey: Long, toSeqNr: Long) =
+  protected def removeEvents(persistenceKey: String, toSeqNr: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .filter(_.sequenceNumber <= toSeqNr)
       .filter(_.removed === false)
       .map(_.removed).update(true)
 
-  protected def selectEvents(persistenceKey: Long) =
+  protected def selectEvents(persistenceKey: String) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .sortBy(_.sequenceNumber.desc)
 
-  protected def selectEvents(persistenceKey: Long, fromSeqNr: Long, toSeqNr: Long, maxSize: Long) =
+  protected def selectEvents(persistenceKey: String, fromSeqNr: Long, toSeqNr: Long, maxSize: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .filter(_.sequenceNumber >= fromSeqNr)
@@ -47,7 +47,7 @@ private[journal] trait EventsQueries {
       .filter(_.removed === false)
       .take(maxSize)
 
-  protected def highestSeqNum(persistenceKey: Long) =
+  protected def highestSeqNum(persistenceKey: String) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
       .sortBy(_.sequenceNumber.desc)
@@ -56,5 +56,5 @@ private[journal] trait EventsQueries {
 
 }
 
-case class EventRecord(persistenceKey: Long, sequenceNumber: Long, content: Array[Byte],
+case class EventRecord(persistenceKey: String, sequenceNumber: Long, content: Array[Byte],
                        created: Option[Timestamp], removed: Boolean = false)

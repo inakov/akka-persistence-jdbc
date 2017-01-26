@@ -34,16 +34,14 @@ class SqlWriteJournal extends AsyncWriteJournal{
   }
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
-    persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).flatMap{ persistenceKey =>
-      val transformedEvents = Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)))
-      transformedEvents match {
-        case Success(events) => persistBatch(events)
-        case Failure(e) => Future.successful(Failure(e))
-      }
+    val transformedEvents = Try(atomicWrite.payload.map(repr => createEventRecord(atomicWrite.persistenceId, repr)))
+    transformedEvents match {
+      case Success(events) => persistBatch(events)
+      case Failure(e) => Future.successful(Failure(e))
     }
   }
 
-  private def createEventRecord(persistenceKey: Long, persistentRepr: PersistentRepr): EventRecord = {
+  private def createEventRecord(persistenceKey: String, persistentRepr: PersistentRepr): EventRecord = {
     val content = serialization.serialize(persistentRepr).get
     EventRecord(persistenceKey, persistentRepr.sequenceNr, content, None)
   }
@@ -56,28 +54,23 @@ class SqlWriteJournal extends AsyncWriteJournal{
   }
 
   override def asyncDeleteMessagesTo(persistenceId: String, toSequenceNr: Long): Future[Unit] = {
-    persistenceKeyRepository.saveOrLoadKey(persistenceId).flatMap{ persistenceKey =>
-      journalRepository.delete(persistenceKey, toSequenceNr)
-    }.map(_ => ())
+    journalRepository.delete(persistenceId, toSequenceNr).map(_ => ())
   }
 
   override def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long,
                                    max: Long)(recoveryCallback: (PersistentRepr) => Unit): Future[Unit] = {
-    persistenceKeyRepository.saveOrLoadKey(persistenceId).flatMap{ persistenceKey =>
-      Source.fromPublisher(journalRepository.eventStream(persistenceKey, fromSequenceNr, toSequenceNr, max))
+      Source.fromPublisher(journalRepository.eventStream(persistenceId, fromSequenceNr, toSequenceNr, max))
         .map(event => serialization.deserialize(event.content, classOf[PersistentRepr]).get)
         .runFold(0){ (count, event) =>
           recoveryCallback(event)
           count + 1
         }.map(_ => ())
-    }
   }
 
 
   override def asyncReadHighestSequenceNr(persistenceId: String, fromSequenceNr: Long): Future[Long] = {
     for{
-      persistenceKey <- persistenceKeyRepository.saveOrLoadKey(persistenceId)
-      seqNr <- journalRepository.loadHighestSequenceNr(persistenceKey, fromSequenceNr)
+      seqNr <- journalRepository.loadHighestSequenceNr(persistenceId, fromSequenceNr)
     } yield seqNr.getOrElse(0L)
   }
 }

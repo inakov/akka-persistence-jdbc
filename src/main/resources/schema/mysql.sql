@@ -3,16 +3,16 @@ CREATE TABLE IF NOT EXISTS persistence_keys (
   persistence_id VARCHAR(255) NOT NULL,
   PRIMARY KEY (persistence_key),
   UNIQUE (persistence_id)
-) ENGINE = InnoDB;
+) ENGINE = MyISAM;
 
 CREATE TABLE IF NOT EXISTS events_journal(
-  persistence_key BIGINT NOT NULL,
+  persistence_id VARCHAR(255) NOT NULL,
   sequence_nr BIGINT NOT NULL,
   content VARBINARY(255) NOT NULL,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   removed BOOLEAN DEFAULT FALSE,
-  PRIMARY KEY (persistence_key, sequence_nr)
-) ENGINE = InnoDB;
+  PRIMARY KEY (persistence_id, sequence_nr)
+) ENGINE = MyISAM;
 
 CREATE TABLE IF NOT EXISTS snapshots (
   persistence_id VARCHAR(255) NOT NULL,
@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS snapshots (
   created_at BIGINT NOT NULL,
   snapshot BLOB NOT NULL,
   PRIMARY KEY (persistence_id, sequence_nr)
-) ENGINE = InnoDB;
+) ENGINE = MyISAM;
