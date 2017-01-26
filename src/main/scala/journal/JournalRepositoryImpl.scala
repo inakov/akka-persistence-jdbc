@@ -24,7 +24,7 @@ class JournalRepositoryImpl(val config: DatabaseConfig[JdbcProfile])
   }
 
   override def delete(persistenceKey: Long, toSequenceNr: Long): Future[Int] = {
-    db.run(deleteEvents(persistenceKey, toSequenceNr))
+    db.run(removeEvents(persistenceKey, toSequenceNr))
   }
 
   override def eventStream(persistenceKey: Long, fromSeqNr: Long,

@@ -17,19 +17,22 @@ private[journal] trait EventsQueries {
     def sequenceNumber = column[Long]("sequence_nr")
     def content = column[Array[Byte]]("content")
     def created = column[Timestamp]("created")
+    def removed = column[Boolean]("removed")
     val pk = primaryKey("events_pk", (persistenceKey, sequenceNumber))
 
-    def * = (persistenceKey, sequenceNumber, content, created.?) <> (EventRecord.tupled, EventRecord.unapply)
+    def * = (persistenceKey, sequenceNumber, content, created.?, removed) <> (EventRecord.tupled, EventRecord.unapply)
   }
 
   private val eventsJournal = TableQuery[EventsTable]
 
   protected def insertEvents(events: Seq[EventRecord]) = eventsJournal ++= events.sortBy(_.sequenceNumber)
 
-  protected def deleteEvents(persistenceKey: Long, toSeqNr: Long) =
+  protected def removeEvents(persistenceKey: Long, toSeqNr: Long) =
     eventsJournal
       .filter(_.persistenceKey === persistenceKey)
-      .filter(_.sequenceNumber <= toSeqNr).delete
+      .filter(_.sequenceNumber <= toSeqNr)
+      .filter(_.removed === false)
+      .map(_.removed).update(true)
 
   protected def selectEvents(persistenceKey: Long) =
     eventsJournal
@@ -41,6 +44,7 @@ private[journal] trait EventsQueries {
       .filter(_.persistenceKey === persistenceKey)
       .filter(_.sequenceNumber >= fromSeqNr)
       .filter(_.sequenceNumber <= toSeqNr)
+      .filter(_.removed === false)
       .take(maxSize)
 
   protected def highestSeqNum(persistenceKey: Long) =
@@ -52,4 +56,5 @@ private[journal] trait EventsQueries {
 
 }
 
-case class EventRecord(persistenceKey: Long, sequenceNumber: Long, content: Array[Byte], created: Option[Timestamp])
+case class EventRecord(persistenceKey: Long, sequenceNumber: Long, content: Array[Byte],
+                       created: Option[Timestamp], removed: Boolean = false)

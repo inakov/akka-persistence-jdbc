@@ -35,9 +35,9 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   def writeAtomicBatch(atomicWrite: AtomicWrite): Future[Try[Unit]] = {
     persistenceKeyRepository.saveOrLoadKey(atomicWrite.persistenceId).flatMap{ persistenceKey =>
-      val events = Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)))
-      events match {
-        case Success(event) => persistBatch(event)
+      val transformedEvents = Try(atomicWrite.payload.map(repr => createEventRecord(persistenceKey, repr)))
+      transformedEvents match {
+        case Success(events) => persistBatch(events)
         case Failure(e) => Future.successful(Failure(e))
       }
     }
@@ -50,9 +50,9 @@ class SqlWriteJournal extends AsyncWriteJournal{
 
   private def persistBatch(events: Seq[EventRecord]): Future[Try[Unit]] = {
     val persistenceResult = journalRepository.save(events).map(_ => ())
-    val result = Promise[Try[Unit]]()
-    persistenceResult.onComplete(result.success)
-    result.future
+    val promise = Promise[Try[Unit]]()
+    persistenceResult.onComplete(promise.success)
+    promise.future
   }
 
   override def asyncDeleteMessagesTo(persistenceId: String, toSequenceNr: Long): Future[Unit] = {

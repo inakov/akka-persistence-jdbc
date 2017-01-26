@@ -8,8 +8,9 @@ CREATE TABLE IF NOT EXISTS persistence_keys (
 CREATE TABLE IF NOT EXISTS events_journal(
   persistence_key BIGINT NOT NULL,
   sequence_nr BIGINT NOT NULL,
-  content BLOB NOT NULL,
+  content VARBINARY(255) NOT NULL,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  removed BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (persistence_key, sequence_nr)
 ) ENGINE = InnoDB;
 
